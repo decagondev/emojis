@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Mood Poster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'emoji-bg': '#f8fafc',
+                        'emoji-accent': '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-blue-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-6xl font-bold text-gray-800 mb-4">
+                🎭 Emoji Mood Gallery 🎭
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Discover the full spectrum of emotions through our curated collection of expressive emojis
+            </p>
+            <div class="mt-6 h-1 w-32 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Emoji Grid -->
+        <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 gap-4 max-w-7xl mx-auto">
+            <!-- Emojis will be populated by JavaScript -->
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-16">
+            <p class="text-gray-300">
+                Created with ❤️ | Total Emojis: <span id="emoji-count">0</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="emoji-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-300" id="modal-content">
+            <div class="p-8 text-center">
+                <div class="relative">
+                    <button id="close-modal" class="absolute -top-2 -right-2 w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <img id="modal-emoji" src="" alt="" class="w-32 h-32 mx-auto object-contain">
+                </div>
+                <h1 id="modal-emotion" class="text-4xl font-bold text-gray-800 mb-4"></h1>
+                <p id="modal-number" class="text-gray-500 text-lg"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Emoji mood mapping
+        const emojiMoods = [
+            "Happy", "Sad", "Excited", "Angry", "Surprised", "Confused", "Loving", "Scared",
+            "Sleepy", "Winking", "Crying", "Laughing", "Thinking", "Cool", "Silly", "Worried",
+            "Proud", "Bored", "Shocked", "Grateful", "Disappointed", "Hopeful", "Nervous", "Calm",
+            "Frustrated", "Cheerful", "Melancholy", "Energetic", "Peaceful", "Anxious", "Joyful", "Grumpy",
+            "Confident", "Shy", "Playful", "Serious", "Relaxed", "Stressed", "Optimistic", "Pessimistic",
+            "Curious", "Satisfied", "Disgusted", "Amazed", "Tired", "Alert", "Dreamy", "Focused",
+            "Dizzy", "Sick", "Healthy", "Strong", "Weak", "Brave", "Cowardly", "Wise",
+            "Foolish", "Patient", "Impatient", "Kind", "Mean", "Gentle", "Rough", "Polite",
+            "Rude", "Honest", "Sneaky", "Loyal", "Betrayed", "Trusting", "Suspicious", "Generous",
+            "Selfish", "Humble", "Arrogant", "Grateful", "Ungrateful", "Forgiving", "Vengeful", "Compassionate",
+            "Cruel", "Empathetic", "Indifferent", "Passionate", "Apathetic", "Motivated", "Lazy", "Determined",
+            "Defeated", "Victorious", "Competitive", "Cooperative", "Independent", "Dependent", "Creative", "Analytical",
+            "Spontaneous", "Planned", "Adventurous", "Cautious", "Outgoing", "Introverted", "Friendly", "Hostile",
+            "Welcoming", "Rejecting", "Accepting", "Judgmental", "Open", "Closed", "Flexible", "Rigid",
+            "Adaptable", "Stubborn", "Progressive", "Traditional", "Modern", "Classic", "Trendy", "Timeless",
+            "Youthful", "Mature", "Innocent", "Experienced", "Naive", "Sophisticated", "Simple", "Complex",
+            "Clear", "Confused", "Certain", "Doubtful", "Confident", "Insecure", "Assured", "Uncertain",
+            "Positive", "Negative", "Neutral"
+        ];
+
+        // Generate emoji grid
+        function generateEmojiGrid() {
+            const grid = document.querySelector('.grid');
+            const totalEmojis = 131; // Based on the folder contents
+            
+            for (let i = 1; i <= totalEmojis; i++) {
+                const emojiContainer = document.createElement('div');
+                emojiContainer.className = 'bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 p-3 text-center group';
+                
+                const emojiNumber = i.toString().padStart(3, '0');
+                const mood = emojiMoods[(i - 1) % emojiMoods.length];
+                
+                emojiContainer.innerHTML = `
+                    <div class="relative overflow-hidden rounded-lg mb-2">
+                        <img 
+                            src="cropped_emojis_advanced/emoji_advanced_${emojiNumber}.png" 
+                            alt="Emoji ${emojiNumber}"
+                            class="w-full h-auto max-w-16 max-h-16 mx-auto object-contain group-hover:scale-110 transition-transform duration-300 cursor-pointer"
+                            onerror="this.parentElement.innerHTML='<div class=\\'w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-xs\\'>Missing</div>'"
+                        >
+                    </div>
+                    <p class="text-xs font-medium text-gray-700 group-hover:text-emoji-accent transition-colors duration-300">
+                        ${mood}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        #${emojiNumber}
+                    </p>
+                `;
+                
+                // Add click handler to open modal
+                emojiContainer.addEventListener('click', () => {
+                    openModal(emojiNumber, mood);
+                });
+                emojiContainer.classList.add('cursor-pointer');
+                
+                grid.appendChild(emojiContainer);
+            }
+            
+            // Update emoji count
+            document.getElementById('emoji-count').textContent = totalEmojis;
+        }
+
+        // Modal functionality
+        function openModal(emojiNumber, mood) {
+            const modal = document.getElementById('emoji-modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalEmoji = document.getElementById('modal-emoji');
+            const modalEmotion = document.getElementById('modal-emotion');
+            const modalNumber = document.getElementById('modal-number');
+            
+            // Set modal content
+            modalEmoji.src = `cropped_emojis_advanced/emoji_advanced_${emojiNumber}.png`;
+            modalEmoji.alt = `Emoji ${emojiNumber}`;
+            modalEmotion.textContent = mood;
+            modalNumber.textContent = `Emoji #${emojiNumber}`;
+            
+            // Show modal with animation
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+            
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('emoji-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            // Hide modal with animation
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100');
+            modalContent.classList.add('scale-95');
+            modalContent.classList.remove('scale-100');
+            
+            // Restore body scrolling
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            generateEmojiGrid();
+            
+            // Modal event listeners
+            const modal = document.getElementById('emoji-modal');
+            const closeButton = document.getElementById('close-modal');
+            
+            // Close modal on close button click
+            closeButton.addEventListener('click', closeModal);
+            
+            // Close modal on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal on ESC key press
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
